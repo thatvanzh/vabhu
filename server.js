@@ -4,32 +4,26 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
 
-// Serve the index.html file
+// Allow the app to load your CSS, JS, Images, and Sound files
+app.use(express.static(__dirname));
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Socket.io Logic (The Chat Brain)
 io.on('connection', (socket) => {
-    
-    // When a new user joins
     socket.on('newuser', (username) => {
-        socket.broadcast.emit('update', username + " has joined the conversation");
+        socket.broadcast.emit('update', username + " joined the chat");
     });
-
-    // When a user disconnects
     socket.on('disconnect', () => {
-        socket.broadcast.emit('update', "A user has left the conversation");
+        socket.broadcast.emit('update', "A user left the chat");
     });
-
-    // When a user sends a message
     socket.on('chat', (message) => {
         socket.broadcast.emit('chat', message);
     });
 });
 
-// Listen on the port Render assigns (or 3000 locally)
 const port = process.env.PORT || 3000;
 http.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Vabhu Server running on port ${port}`);
 });
