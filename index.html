@@ -1,335 +1,52 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Live Chat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        /* --- CSS STYLES --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: #121212; 
-            color: #e0e0e0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* Prevents double scrolling on phone */
-        }
-
-        /* The Main App Container */
-        .app-container {
-            width: 100%;
-            height: 100%;
-            background-color: #1e1e1e;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Laptop View: Center the app */
-        @media (min-width: 768px) {
-            .app-container {
-                max-width: 900px;
-                height: 90vh;
-                border-radius: 12px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                border: 1px solid #333;
-            }
-        }
-
-        /* --- Screens --- */
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease-in-out;
-            z-index: 10;
-        }
-
-        /* Join Screen Styling */
-        .join-screen {
-            background-color: #1e1e1e;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            z-index: 20; 
-        }
-        
-        /* Hide Join Screen when active class is removed */
-        .join-screen.hidden {
-            display: none;
-        }
-
-        .join-screen h2 { margin-bottom: 20px; color: #fff; text-align: center;}
-
-        .join-screen input {
-            padding: 15px;
-            width: 100%;
-            max-width: 300px;
-            background: #2c2c2c;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .join-screen button {
-            padding: 12px 30px;
-            background: #6c5ce7;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        /* Chat Screen Styling */
-        .chat-screen {
-            background-color: #1e1e1e;
-            display: none; /* Hidden initially */
-            height: 100%;
-            flex-direction: column;
-        }
-        
-        .chat-screen.active {
-            display: flex;
-        }
-
-        .header {
-            height: 60px;
-            background: #252525;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            border-bottom: 1px solid #333;
-            flex-shrink: 0; /* Prevents header from shrinking */
-        }
-
-        .header .logo { font-weight: 600; color: #fff; font-size: 18px; }
-        .header .status { font-size: 12px; color: #00b894; }
-
-        .messages {
-            flex: 1; 
-            padding: 20px;
-            overflow-y: auto; 
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: #1e1e1e;
-        }
-
-        /* Message Bubbles */
-        .message {
-            max-width: 80%;
-            padding: 10px 15px;
-            border-radius: 18px;
-            font-size: 15px;
-            line-height: 1.4;
-            position: relative;
-            word-wrap: break-word;
-        }
-
-        .my-message {
-            background: #6c5ce7;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .other-message {
-            background: #333;
-            color: #ddd;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message .username {
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: rgba(255,255,255,0.7);
-            display: block;
-        }
-
-        .update {
-            font-size: 12px;
-            color: #888;
-            text-align: center;
-            margin: 10px 0;
-            width: 100%;
-        }
-
-        /* Type Input Area */
-        .typebox {
-            height: 70px;
-            background: #252525;
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            border-top: 1px solid #333;
-            flex-shrink: 0; /* Prevents shrinking */
-        }
-
-        .typebox input {
-            flex: 1;
-            height: 45px;
-            background: #333;
-            border: none;
-            border-radius: 25px;
-            padding: 0 20px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .typebox button {
-            margin-left: 10px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: #6c5ce7;
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-        }
-    </style>
+    <title>Vabhu Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=San+Francisco&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="screen join-screen" id="join-screen">
-            <div>
-                <h2>Join Chatroom</h2>
-                <input type="text" id="username" placeholder="Enter your name...">
-                <button id="join-btn">Join Chat</button>
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <div class="glass-container">
+        
+        <div class="chat-header">
+            <div class="logo-area">
+                <img src="chatlogo2.png" alt="Vabhu Logo" class="app-logo">
+                <div class="app-info">
+                    <h2>Vabhu</h2>
+                    <p>Welcome to Vabhu...</p>
+                </div>
             </div>
+            <div class="online-indicator"></div>
         </div>
 
-        <div class="screen chat-screen" id="chat-screen">
-            <div class="header">
-                <div class="logo">Live Room</div>
-                <div class="status">● Online</div>
+        <div class="messages-area" id="messages-container">
             </div>
-            
-            <div class="messages" id="messages-container"></div>
 
-            <div class="typebox">
-                <input type="text" id="message-input" placeholder="Type a message...">
-                <button id="send-btn">➤</button>
-            </div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Type something sweet...">
+            <button id="send-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="join-modal">
+        <div class="glass-modal">
+            <img src="chatlogo2.png" alt="Logo" class="modal-logo">
+            <h3>Enter Vabhu</h3>
+            <p>Please enter your name to start</p>
+            <input type="text" id="username-input" placeholder="Your Name">
+            <button id="join-btn">Start Chatting</button>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-
-    <script>
-        const socket = io(); // Connect to server
-
-        const app = document.querySelector(".app-container");
-        const joinScreen = document.getElementById("join-screen");
-        const chatScreen = document.getElementById("chat-screen");
-        const joinBtn = document.getElementById("join-btn");
-        const usernameInput = document.getElementById("username");
-        const messageInput = document.getElementById("message-input");
-        const sendBtn = document.getElementById("send-btn");
-        const messagesContainer = document.getElementById("messages-container");
-
-        let uname;
-
-        // JOIN CHAT
-        joinBtn.addEventListener("click", function(){
-            let username = usernameInput.value;
-            if(username.length == 0){
-                return;
-            }
-            uname = username;
-            
-            // Send "newuser" event to server
-            socket.emit("newuser", username);
-            
-            joinScreen.classList.add("hidden");
-            chatScreen.classList.add("active");
-        });
-
-        // SEND MESSAGE
-        sendBtn.addEventListener("click", function(){
-            let message = messageInput.value;
-            if(message.length == 0){
-                return;
-            }
-            
-            // 1. Show my own message immediately
-            renderMessage("my", {
-                username: uname,
-                text: message
-            });
-            
-            // 2. Send message to server
-            socket.emit("chat", {
-                username: uname,
-                text: message
-            });
-            
-            messageInput.value = "";
-        });
-
-        // LISTEN: Receive messages from others
-        socket.on("chat", function(message){
-            renderMessage("other", message);
-        });
-
-        // LISTEN: User joined/left updates
-        socket.on("update", function(update){
-            renderMessage("update", update);
-        });
-
-        // HELPER: Display Message on Screen
-        function renderMessage(type, message){
-            let messageContainer = document.createElement("div");
-            
-            if(type == "my"){
-                messageContainer.setAttribute("class", "message my-message");
-                messageContainer.innerHTML = `
-                    <div class="text">${message.text}</div>
-                `;
-            } else if(type == "other"){
-                messageContainer.setAttribute("class", "message other-message");
-                messageContainer.innerHTML = `
-                    <span class="username">${message.username}</span>
-                    <div class="text">${message.text}</div>
-                `;
-            } else if(type == "update"){
-                messageContainer.setAttribute("class", "update");
-                messageContainer.innerText = message;
-            }
-
-            messagesContainer.appendChild(messageContainer);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight; 
-        }
-    </script>
+    <script src="client.js"></script>
 </body>
 </html>
