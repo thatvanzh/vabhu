@@ -1,6 +1,5 @@
 const socket = io();
 
-// Elements
 const modal = document.getElementById("join-modal");
 const joinBtn = document.getElementById("join-btn");
 const usernameInput = document.getElementById("username-input");
@@ -10,85 +9,80 @@ const messagesContainer = document.getElementById("messages-container");
 
 let uname;
 
-// 1. JOIN CHAT
+// JOIN CHAT
 joinBtn.addEventListener("click", function(){
     let username = usernameInput.value;
-    if(username.length == 0){ return; }
-    
+    if(username.length == 0) return;
+
     uname = username;
-    socket.emit("newuser", username);
-    
+
+    // ✅ MATCH SERVER EVENT NAME
+    socket.emit("new-user-joined", username);
+
     modal.style.display = "none";
 });
 
-// 2. SEND MESSAGE (The Fix is Here)
+// SEND MESSAGE
 function sendMessage(){
     let message = messageInput.value;
-    
-    // SAFETY CHECK: If message is empty, stop.
-    if(message.length == 0){ return; }
-    
-    // SAFETY CHECK: If username is lost, ask again (or use Guest)
-    if(!uname){ uname = "Guest"; }
+    if(message.length == 0) return;
 
-    // 1. Show my message locally
     renderMessage("my", {
-        username: uname,
         text: message
     });
-    
-    // 2. Send to server
-    socket.emit("chat", {
-        username: uname,
-        text: message
-    });
-    
-    // 3. Clear input
+
+    // ✅ MATCH SERVER EVENT NAME
+    socket.emit("send", message);
+
     messageInput.value = "";
 }
 
-// Button Click Event
-sendBtn.addEventListener("click", function() {
-    sendMessage();
-});
+sendBtn.addEventListener("click", sendMessage);
 
-// Enter Key Event
 messageInput.addEventListener("keydown", function(e){
     if(e.key === "Enter"){
         sendMessage();
     }
 });
 
-// 3. LISTEN FOR MESSAGES
-socket.on("chat", function(message){
-    renderMessage("other", message);
+// RECEIVE MESSAGE
+socket.on("receive", function(data){
+    renderMessage("other", {
+        username: data.name,
+        text: data.message
+    });
 });
 
-// 4. LISTEN FOR UPDATES
-socket.on("update", function(update){
-    renderMessage("update", update);
+// USER JOINED
+socket.on("user-joined", function(name){
+    renderMessage("update", name + " joined the chat");
 });
 
-// 5. RENDER FUNCTION
+// USER LEFT
+socket.on("left", function(name){
+    renderMessage("update", name + " left the chat");
+});
+
+// RENDER
 function renderMessage(type, message){
     let el = document.createElement("div");
-    
+
     if(type == "my"){
         el.className = "message my-message";
-        el.innerHTML = `
-            <div class="text">${message.text}</div>
-        `;
-    } else if(type == "other"){
+        el.innerHTML = `<div class="text">${message.text}</div>`;
+    }
+    else if(type == "other"){
         el.className = "message other-message";
         el.innerHTML = `
             <span class="username">${message.username}</span>
             <div class="text">${message.text}</div>
         `;
-    } else if(type == "update"){
+    }
+    else if(type == "update"){
         el.className = "update-message";
         el.innerText = message;
     }
 
     messagesContainer.appendChild(el);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
