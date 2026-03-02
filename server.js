@@ -4,6 +4,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
 
+// CRITICAL: This allows the browser to load style.css, client.js, and images
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
@@ -12,21 +13,21 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     
-    // 1. Join Event
+    // 1. When a user joins
     socket.on('newuser', (username) => {
-        console.log(username + " connected"); // See this in terminal?
-        socket.broadcast.emit('update', username + " has joined the chat");
+        // Send to everyone ELSE
+        socket.broadcast.emit('update', username + " joined the conversation");
     });
 
-    // 2. Disconnect Event
+    // 2. When a user disconnects
     socket.on('disconnect', () => {
-        console.log("A user disconnected"); // See this in terminal?
-        socket.broadcast.emit('update', "A user has left the chat");
+        // Send to everyone ELSE
+        socket.broadcast.emit('update', "A user left the conversation");
     });
 
-    // 3. Chat Message Event
+    // 3. When a user sends a chat message
     socket.on('chat', (message) => {
-        console.log("Message received: " + message.text); // See this in terminal?
+        // Send to everyone ELSE
         socket.broadcast.emit('chat', message);
     });
 });
