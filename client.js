@@ -1,6 +1,7 @@
 const socket = io();
 
-// DOM Elements
+// 1. SELECT ELEMENTS FROM YOUR HTML
+const app = document.querySelector(".glass-container");
 const modal = document.getElementById("join-modal");
 const joinBtn = document.getElementById("join-btn");
 const usernameInput = document.getElementById("username-input");
@@ -8,73 +9,73 @@ const messageInput = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 const messagesContainer = document.getElementById("messages-container");
 
-// Sound (Optional - wrap in try/catch to prevent errors if file missing)
-let notificationSound;
-try {
-    notificationSound = new Audio('newmessage.wav');
-} catch (e) {
-    console.log("Sound file not found");
-}
+// Optional: Sound
+let notificationSound = new Audio('newmessage.wav');
 
-let uname;
+let uname; // Variable to store your name
 
-// --- JOIN CHAT ---
+// 2. JOIN CHAT FUNCTION
 joinBtn.addEventListener("click", function(){
     let username = usernameInput.value;
     if(username.length == 0){
-        return; 
+        return; // Don't do anything if name is empty
     }
     uname = username;
     
+    // Tell server we are here
     socket.emit("newuser", username);
     
+    // Hide the popup
     modal.style.display = "none";
 });
 
-// --- SEND MESSAGE ---
-sendBtn.addEventListener("click", sendMessage);
-messageInput.addEventListener("keypress", function(e){
-    if(e.key === "Enter"){
-        sendMessage();
-    }
-});
-
+// 3. SEND MESSAGE FUNCTION
 function sendMessage(){
     let message = messageInput.value;
     if(message.length == 0){
         return;
     }
     
-    // 1. Show my message locally
+    // A. Show MY message immediately on my screen
     renderMessage("my", {
         username: uname,
         text: message
     });
     
-    // 2. Send to server
+    // B. Send message to SERVER (so others see it)
     socket.emit("chat", {
         username: uname,
         text: message
     });
     
+    // Clear the input box
     messageInput.value = "";
 }
 
-// --- RECEIVE MESSAGES ---
-socket.on("chat", function(message){
-    // Play sound if possible
-    if(notificationSound) {
-        notificationSound.play().catch(error => console.log("Browser blocked sound"));
+// Click the send button
+sendBtn.addEventListener("click", sendMessage);
+
+// Press "Enter" key to send
+messageInput.addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        sendMessage();
     }
+});
+
+// 4. LISTEN FOR MESSAGES FROM OTHERS
+socket.on("chat", function(message){
+    // Play sound
+    notificationSound.play().catch(err => console.log("Sound blocked"));
+    // Show the message
     renderMessage("other", message);
 });
 
-// --- RECEIVE UPDATES (Join/Left) ---
+// 5. LISTEN FOR UPDATES (Join/Left)
 socket.on("update", function(updateText){
     renderMessage("update", updateText);
 });
 
-// --- RENDER FUNCTION ---
+// 6. RENDER FUNCTION (Draws the bubbles)
 function renderMessage(type, message){
     let el = document.createElement("div");
     
@@ -91,10 +92,10 @@ function renderMessage(type, message){
         `;
     } else if(type == "update"){
         el.className = "update-message";
-        // 'message' here is just a string (e.g. "Vabhu joined")
-        el.innerText = message; 
+        el.innerText = message; // 'message' is just text here
     }
 
     messagesContainer.appendChild(el);
+    // Auto-scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight; 
 }
