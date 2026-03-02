@@ -1,6 +1,6 @@
 const socket = io();
 
-// Elements
+// DOM Elements
 const modal = document.getElementById("join-modal");
 const joinBtn = document.getElementById("join-btn");
 const usernameInput = document.getElementById("username-input");
@@ -8,12 +8,17 @@ const messageInput = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 const messagesContainer = document.getElementById("messages-container");
 
-// Load the sound
-const notificationSound = new Audio('newmessage.wav');
+// Sound (Optional - wrap in try/catch to prevent errors if file missing)
+let notificationSound;
+try {
+    notificationSound = new Audio('newmessage.wav');
+} catch (e) {
+    console.log("Sound file not found");
+}
 
 let uname;
 
-// 1. JOIN CHAT (Clicking the button in the popup)
+// --- JOIN CHAT ---
 joinBtn.addEventListener("click", function(){
     let username = usernameInput.value;
     if(username.length == 0){
@@ -21,14 +26,12 @@ joinBtn.addEventListener("click", function(){
     }
     uname = username;
     
-    // Notify Server
     socket.emit("newuser", username);
     
-    // Hide the Popup
     modal.style.display = "none";
 });
 
-// 2. SEND MESSAGE
+// --- SEND MESSAGE ---
 sendBtn.addEventListener("click", sendMessage);
 messageInput.addEventListener("keypress", function(e){
     if(e.key === "Enter"){
@@ -42,13 +45,13 @@ function sendMessage(){
         return;
     }
     
-    // Render my message
+    // 1. Show my message locally
     renderMessage("my", {
         username: uname,
         text: message
     });
     
-    // Send to server
+    // 2. Send to server
     socket.emit("chat", {
         username: uname,
         text: message
@@ -57,20 +60,21 @@ function sendMessage(){
     messageInput.value = "";
 }
 
-// 3. LISTEN FOR MESSAGES
+// --- RECEIVE MESSAGES ---
 socket.on("chat", function(message){
-    // Play Sound
-    notificationSound.play().catch(error => console.log("Sound blocked by browser until interaction"));
-    
+    // Play sound if possible
+    if(notificationSound) {
+        notificationSound.play().catch(error => console.log("Browser blocked sound"));
+    }
     renderMessage("other", message);
 });
 
-// 4. LISTEN FOR UPDATES (Join/Left)
-socket.on("update", function(update){
-    renderMessage("update", update);
+// --- RECEIVE UPDATES (Join/Left) ---
+socket.on("update", function(updateText){
+    renderMessage("update", updateText);
 });
 
-// HELPER: Render
+// --- RENDER FUNCTION ---
 function renderMessage(type, message){
     let el = document.createElement("div");
     
@@ -87,7 +91,8 @@ function renderMessage(type, message){
         `;
     } else if(type == "update"){
         el.className = "update-message";
-        el.innerText = message;
+        // 'message' here is just a string (e.g. "Vabhu joined")
+        el.innerText = message; 
     }
 
     messagesContainer.appendChild(el);
