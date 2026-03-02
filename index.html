@@ -249,46 +249,85 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
-        // DOM Elements
-        const joinScreen = document.getElementById('join-screen');
-        const chatScreen = document.getElementById('chat-screen');
-        const joinBtn = document.getElementById('join-btn');
-        const usernameInput = document.getElementById('username');
-        const sendBtn = document.getElementById('send-btn');
-        const messageInput = document.getElementById('message-input');
-        const messagesContainer = document.getElementById('messages-container');
+        const app = document.querySelector(".app-container");
+        const socket = io();
 
-        let username = "";
-        let socket;
+        const joinScreen = document.getElementById("join-screen");
+        const chatScreen = document.getElementById("chat-screen");
+        const joinBtn = document.getElementById("join-btn");
+        const usernameInput = document.getElementById("username");
+        const messageInput = document.getElementById("message-input");
+        const sendBtn = document.getElementById("send-btn");
+        const messagesContainer = document.getElementById("messages-container");
 
-        // Note: The socket logic is commented out until you add the backend.
-        // Once backend is ready, we will uncomment this.
+        let uname;
 
-        /* joinBtn.addEventListener('click', function(){
-            username = usernameInput.value;
+        // JOIN CHAT
+        joinBtn.addEventListener("click", function(){
+            let username = usernameInput.value;
             if(username.length == 0){
                 return;
             }
-            // Switch screens
-            socket = io(); // Connect to server
-            
-            // Tell server we joined
+            uname = username;
             socket.emit("newuser", username);
-
+            
             joinScreen.style.display = "none";
             chatScreen.style.display = "flex";
         });
-        */
 
-        // --- TEMPORARY UI TEST --- 
-        // (This allows you to see the UI change without a backend)
-        joinBtn.addEventListener('click', function(){
-             if(usernameInput.value.length > 0){
-                 joinScreen.style.display = "none";
-                 chatScreen.style.display = "flex";
-             }
+        // SEND MESSAGE
+        sendBtn.addEventListener("click", function(){
+            let message = messageInput.value;
+            if(message.length == 0){
+                return;
+            }
+            renderMessage("my", {
+                username: uname,
+                text: message
+            });
+            socket.emit("chat", {
+                username: uname,
+                text: message
+            });
+            messageInput.value = "";
         });
 
+        // LISTEN FOR MESSAGES FROM OTHERS
+        socket.on("chat", function(message){
+            renderMessage("other", message);
+        });
+
+        // LISTEN FOR UPDATES (User joined/left)
+        socket.on("update", function(update){
+            renderMessage("update", update);
+        });
+
+        // HELPER FUNCTION TO DRAW MESSAGES
+        function renderMessage(type, message){
+            let messageContainer = document.createElement("div");
+            
+            if(type == "my"){
+                messageContainer.setAttribute("class", "message my-message");
+                messageContainer.innerHTML = `
+                    <span class="username">You</span>
+                    <div class="text">${message.text}</div>
+                `;
+            } else if(type == "other"){
+                messageContainer.setAttribute("class", "message other-message");
+                messageContainer.innerHTML = `
+                    <span class="username">${message.username}</span>
+                    <div class="text">${message.text}</div>
+                `;
+            } else if(type == "update"){
+                messageContainer.setAttribute("class", "update");
+                messageContainer.innerText = message;
+            }
+
+            messagesContainer.appendChild(messageContainer);
+            // Auto scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+        }
     </script>
 </body>
 </html>
+
