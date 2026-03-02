@@ -4,88 +4,101 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-tap-highlight-color: transparent; /* Removes blue highlight on tap */
+}
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.4);
 }
 
 body {
-    height: 100vh;
+    /* Use 100dvh for mobile browsers to account for address bars */
+    height: 100dvh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
     /* Baby Pink Gradient Background */
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); 
     background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
-    overflow: hidden;
+    overflow: hidden; /* Prevents scrolling the whole page */
 }
 
 /* --- BACKGROUND DECORATION (Floating Blobs) --- */
 .circle {
     position: absolute;
-    background: white;
     background: linear-gradient(to right, #ffffff, #ffecec);
     border-radius: 50%;
-    z-index: 1;
+    z-index: 0; /* Behind everything */
+    pointer-events: none; /* Let clicks pass through */
 }
 .circle1 {
-    top: 5%;
-    left: 5%;
+    top: -50px;
+    left: -50px;
     width: 200px;
     height: 200px;
     opacity: 0.4;
 }
 .circle2 {
-    bottom: 5%;
-    right: 5%;
+    bottom: -50px;
+    right: -50px;
     width: 300px;
     height: 300px;
     opacity: 0.3;
 }
 
-/* --- THE GLASS CONTAINER (Main App) --- */
+/* --- THE MAIN APP CONTAINER --- */
 .glass-container {
-    width: 100%;
-    height: 100%;
-    max-width: 500px; /* Mobile width usually */
-    max-height: 900px;
-    z-index: 2;
-    
-    /* GLASS EFFECT */
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    
+    z-index: 10;
     display: flex;
     flex-direction: column;
+    position: relative;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    
+    /* MOBILE DEFAULT: Full Screen */
+    width: 100%;
+    height: 100%;
+    border-radius: 0; 
+    border: none;
 }
 
-@media (min-width: 600px) {
+/* LAPTOP/TABLET TWEAK: Make it a floating box */
+@media (min-width: 768px) {
     .glass-container {
-        height: 90vh;
+        width: 90%;
+        max-width: 1000px;
+        height: 85vh;
         border-radius: 24px;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     }
 }
 
 /* --- HEADER --- */
 .chat-header {
-    height: 80px;
-    padding: 10px 20px;
+    height: 70px; /* Fixed height */
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    border-bottom: 1px solid var(--glass-border);
+    flex-shrink: 0; /* Prevents header from shrinking */
 }
 
 .logo-area {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .app-logo {
-    width: 50px;
-    height: 50px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     object-fit: cover;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
@@ -98,6 +111,7 @@ body {
 .app-info p {
     font-size: 12px;
     color: #777;
+    margin-top: 2px;
 }
 
 .online-indicator {
@@ -110,66 +124,77 @@ body {
 
 /* --- MESSAGES AREA --- */
 .messages-area {
-    flex: 1;
+    flex: 1; /* Takes all available space */
     padding: 20px;
-    overflow-y: auto;
+    overflow-y: auto; /* Allow scrolling inside this area */
     display: flex;
     flex-direction: column;
     gap: 12px;
+    
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; 
 }
 
-/* Scrollbar hiding */
-.messages-area::-webkit-scrollbar { width: 4px; }
-.messages-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px;}
+/* Hide scrollbar but keep functionality */
+.messages-area::-webkit-scrollbar { width: 0px; background: transparent; }
 
 .message {
-    max-width: 75%;
+    max-width: 80%;
     padding: 12px 16px;
-    font-size: 14px;
+    font-size: 15px;
     position: relative;
     line-height: 1.4;
+    word-wrap: break-word;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .my-message {
     align-self: flex-end;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    background: var(--primary-gradient);
     color: #fff;
-    border-radius: 18px 18px 2px 18px; /* Chat bubble shape */
+    border-radius: 18px 18px 4px 18px;
 }
 
 .other-message {
     align-self: flex-start;
-    background: rgba(255, 255, 255, 0.7);
-    color: #444;
-    border-radius: 18px 18px 18px 2px;
-    border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(255, 255, 255, 0.85);
+    color: #333;
+    border-radius: 18px 18px 18px 4px;
 }
 
 .message .username {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     margin-bottom: 4px;
     display: block;
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 .update-message {
     text-align: center;
-    font-size: 11px;
-    color: #888;
-    margin: 10px 0;
+    font-size: 12px;
+    color: #666;
+    margin: 15px 0;
     font-style: italic;
+    background: rgba(255,255,255,0.4);
+    padding: 5px 15px;
+    border-radius: 20px;
+    align-self: center;
 }
 
 /* --- INPUT AREA --- */
 .input-area {
-    height: 70px;
+    min-height: 70px;
     padding: 10px 15px;
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.3);
-    border-top: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.4);
+    border-top: 1px solid var(--glass-border);
+    flex-shrink: 0; /* Prevents shrinking */
+    
+    /* Safe area for iPhone X and newer */
+    padding-bottom: env(safe-area-inset-bottom, 10px);
 }
 
 .input-area input {
@@ -178,16 +203,14 @@ body {
     border-radius: 25px;
     border: none;
     padding: 0 20px;
-    font-size: 15px;
-    background: rgba(255,255,255,0.6);
+    font-size: 16px; /* Prevents zoom on iOS */
+    background: rgba(255,255,255,0.7);
     color: #333;
     outline: none;
-    transition: 0.3s;
 }
 
 .input-area input:focus {
     background: #fff;
-    box-shadow: 0 4px 15px rgba(255, 154, 158, 0.2);
 }
 
 .input-area button {
@@ -196,21 +219,20 @@ body {
     margin-left: 10px;
     border: none;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    background: var(--primary-gradient);
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(255, 154, 158, 0.4);
 }
-.input-area button:active { transform: scale(0.9); }
 
 /* --- MODAL (POP UP) --- */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.1);
-    backdrop-filter: blur(5px);
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(8px);
     z-index: 100;
     display: flex;
     justify-content: center;
@@ -218,11 +240,8 @@ body {
 }
 
 .glass-modal {
-    background: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.85);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
     padding: 30px;
     border-radius: 24px;
     text-align: center;
@@ -230,28 +249,30 @@ body {
     max-width: 350px;
 }
 
-.modal-logo { width: 60px; height: 60px; border-radius: 12px; margin-bottom: 15px; }
-
-.glass-modal h3 { color: #333; margin-bottom: 5px; }
-.glass-modal p { color: #666; font-size: 13px; margin-bottom: 20px; }
+.modal-logo { width: 70px; height: 70px; border-radius: 18px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.glass-modal h3 { color: #333; margin-bottom: 5px; font-size: 20px;}
+.glass-modal p { color: #666; font-size: 14px; margin-bottom: 20px; }
 
 .glass-modal input {
     width: 100%;
-    padding: 12px;
-    border-radius: 12px;
+    padding: 15px;
+    border-radius: 15px;
     border: 1px solid #ddd;
     margin-bottom: 15px;
     outline: none;
     text-align: center;
+    font-size: 16px;
+    background: #f9f9f9;
 }
 
 .glass-modal button {
     width: 100%;
-    padding: 12px;
+    padding: 15px;
     background: #333;
     color: #fff;
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
     font-weight: 600;
+    font-size: 16px;
     cursor: pointer;
 }
