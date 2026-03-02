@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Live Chat</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -15,13 +15,14 @@
         }
 
         body {
-            background-color: #121212; /* Dark background for laptop */
+            background-color: #121212; 
             color: #e0e0e0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
+            width: 100vw;
+            overflow: hidden; /* Prevents double scrolling on phone */
         }
 
         /* The Main App Container */
@@ -35,7 +36,7 @@
             overflow: hidden;
         }
 
-        /* Laptop View: Center the app and give it borders */
+        /* Laptop View: Center the app */
         @media (min-width: 768px) {
             .app-container {
                 max-width: 900px;
@@ -65,13 +66,15 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            z-index: 20; /* On top initially */
+            z-index: 20; 
+        }
+        
+        /* Hide Join Screen when active class is removed */
+        .join-screen.hidden {
+            display: none;
         }
 
-        .join-screen h2 {
-            margin-bottom: 20px;
-            color: #fff;
-        }
+        .join-screen h2 { margin-bottom: 20px; color: #fff; text-align: center;}
 
         .join-screen input {
             padding: 15px;
@@ -95,16 +98,20 @@
             font-size: 16px;
             cursor: pointer;
             font-weight: 600;
-        }
-
-        .join-screen button:hover {
-            background: #5b4cc4;
+            width: 100%;
+            max-width: 300px;
         }
 
         /* Chat Screen Styling */
         .chat-screen {
             background-color: #1e1e1e;
-            display: none; /* Hidden until joined */
+            display: none; /* Hidden initially */
+            height: 100%;
+            flex-direction: column;
+        }
+        
+        .chat-screen.active {
+            display: flex;
         }
 
         .header {
@@ -115,31 +122,25 @@
             justify-content: space-between;
             padding: 0 20px;
             border-bottom: 1px solid #333;
+            flex-shrink: 0; /* Prevents header from shrinking */
         }
 
-        .header .logo {
-            font-weight: 600;
-            color: #fff;
-            font-size: 18px;
-        }
-        
-        .header .status {
-            font-size: 12px;
-            color: #00b894; /* Green dot color */
-        }
+        .header .logo { font-weight: 600; color: #fff; font-size: 18px; }
+        .header .status { font-size: 12px; color: #00b894; }
 
         .messages {
-            flex: 1; /* Takes remaining height */
+            flex: 1; 
             padding: 20px;
-            overflow-y: auto; /* Scrollable */
+            overflow-y: auto; 
             display: flex;
             flex-direction: column;
             gap: 10px;
+            background: #1e1e1e;
         }
 
         /* Message Bubbles */
         .message {
-            max-width: 70%;
+            max-width: 80%;
             padding: 10px 15px;
             border-radius: 18px;
             font-size: 15px;
@@ -151,14 +152,14 @@
         .my-message {
             background: #6c5ce7;
             color: white;
-            align-self: flex-end; /* Push to right */
+            align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
 
         .other-message {
             background: #333;
             color: #ddd;
-            align-self: flex-start; /* Push to left */
+            align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
 
@@ -170,12 +171,12 @@
             display: block;
         }
 
-        /* System Messages (e.g. "User joined") */
         .update {
             font-size: 12px;
             color: #888;
             text-align: center;
             margin: 10px 0;
+            width: 100%;
         }
 
         /* Type Input Area */
@@ -184,8 +185,9 @@
             background: #252525;
             display: flex;
             align-items: center;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-top: 1px solid #333;
+            flex-shrink: 0; /* Prevents shrinking */
         }
 
         .typebox input {
@@ -214,13 +216,11 @@
             align-items: center;
             font-size: 18px;
         }
-
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        
         <div class="screen join-screen" id="join-screen">
             <div>
                 <h2>Join Chatroom</h2>
@@ -235,23 +235,21 @@
                 <div class="status">● Online</div>
             </div>
             
-            <div class="messages" id="messages-container">
-                </div>
+            <div class="messages" id="messages-container"></div>
 
             <div class="typebox">
                 <input type="text" id="message-input" placeholder="Type a message...">
                 <button id="send-btn">➤</button>
             </div>
         </div>
-
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
-        const app = document.querySelector(".app-container");
-        const socket = io();
+        const socket = io(); // Connect to server
 
+        const app = document.querySelector(".app-container");
         const joinScreen = document.getElementById("join-screen");
         const chatScreen = document.getElementById("chat-screen");
         const joinBtn = document.getElementById("join-btn");
@@ -269,10 +267,12 @@
                 return;
             }
             uname = username;
+            
+            // Send "newuser" event to server
             socket.emit("newuser", username);
             
-            joinScreen.style.display = "none";
-            chatScreen.style.display = "flex";
+            joinScreen.classList.add("hidden");
+            chatScreen.classList.add("active");
         });
 
         // SEND MESSAGE
@@ -281,35 +281,39 @@
             if(message.length == 0){
                 return;
             }
+            
+            // 1. Show my own message immediately
             renderMessage("my", {
                 username: uname,
                 text: message
             });
+            
+            // 2. Send message to server
             socket.emit("chat", {
                 username: uname,
                 text: message
             });
+            
             messageInput.value = "";
         });
 
-        // LISTEN FOR MESSAGES FROM OTHERS
+        // LISTEN: Receive messages from others
         socket.on("chat", function(message){
             renderMessage("other", message);
         });
 
-        // LISTEN FOR UPDATES (User joined/left)
+        // LISTEN: User joined/left updates
         socket.on("update", function(update){
             renderMessage("update", update);
         });
 
-        // HELPER FUNCTION TO DRAW MESSAGES
+        // HELPER: Display Message on Screen
         function renderMessage(type, message){
             let messageContainer = document.createElement("div");
             
             if(type == "my"){
                 messageContainer.setAttribute("class", "message my-message");
                 messageContainer.innerHTML = `
-                    <span class="username">You</span>
                     <div class="text">${message.text}</div>
                 `;
             } else if(type == "other"){
@@ -324,10 +328,8 @@
             }
 
             messagesContainer.appendChild(messageContainer);
-            // Auto scroll to bottom
             messagesContainer.scrollTop = messagesContainer.scrollHeight; 
         }
     </script>
 </body>
 </html>
-
