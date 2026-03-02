@@ -8,8 +8,6 @@ const messageInput = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 const messagesContainer = document.getElementById("messages-container");
 
-// Sound (Optional - fails silently if file missing)
-let notificationSound = new Audio('newmessage.wav');
 let uname;
 
 // 1. JOIN CHAT
@@ -23,34 +21,46 @@ joinBtn.addEventListener("click", function(){
     modal.style.display = "none";
 });
 
-// 2. SEND MESSAGE
+// 2. SEND MESSAGE (The Fix is Here)
 function sendMessage(){
     let message = messageInput.value;
+    
+    // SAFETY CHECK: If message is empty, stop.
     if(message.length == 0){ return; }
     
-    // Show my message immediately
+    // SAFETY CHECK: If username is lost, ask again (or use Guest)
+    if(!uname){ uname = "Guest"; }
+
+    // 1. Show my message locally
     renderMessage("my", {
         username: uname,
         text: message
     });
     
-    // Send to server
+    // 2. Send to server
     socket.emit("chat", {
         username: uname,
         text: message
     });
     
+    // 3. Clear input
     messageInput.value = "";
 }
 
-sendBtn.addEventListener("click", sendMessage);
-messageInput.addEventListener("keypress", function(e){
-    if(e.key === "Enter"){ sendMessage(); }
+// Button Click Event
+sendBtn.addEventListener("click", function() {
+    sendMessage();
+});
+
+// Enter Key Event
+messageInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        sendMessage();
+    }
 });
 
 // 3. LISTEN FOR MESSAGES
 socket.on("chat", function(message){
-    notificationSound.play().catch(e => console.log("Sound blocked"));
     renderMessage("other", message);
 });
 
@@ -65,7 +75,9 @@ function renderMessage(type, message){
     
     if(type == "my"){
         el.className = "message my-message";
-        el.innerHTML = `<div class="text">${message.text}</div>`;
+        el.innerHTML = `
+            <div class="text">${message.text}</div>
+        `;
     } else if(type == "other"){
         el.className = "message other-message";
         el.innerHTML = `
