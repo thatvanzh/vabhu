@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io("https://vabhu.onrender.com");
 
 const modal = document.getElementById("join-modal");
 const joinBtn = document.getElementById("join-btn");
@@ -86,3 +86,4 @@ function renderMessage(type, message){
     messagesContainer.appendChild(el);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
+
