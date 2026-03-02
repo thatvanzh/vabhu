@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
-    cors: { origin: "*" } // Allow all connections
+    cors: { origin: "*" }
 });
 const path = require('path');
 
@@ -13,18 +13,18 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('User Connected:', socket.id);
-
+    
     socket.on('newuser', (username) => {
-        socket.broadcast.emit('update', username + " joined");
-    });
-
-    socket.on('chat', (message) => {
-        socket.broadcast.emit('chat', message);
+        socket.broadcast.emit('update', username + " joined the conversation");
     });
 
     socket.on('disconnect', () => {
-        socket.broadcast.emit('update', "User left");
+        socket.broadcast.emit('update', "A user left the conversation");
+    });
+
+    socket.on('chat', (message) => {
+        // Broadcast sends to everyone EXCEPT sender
+        socket.broadcast.emit('chat', message);
     });
 });
 
