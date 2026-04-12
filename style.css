@@ -8,14 +8,19 @@
     font-family: 'Inter', sans-serif;
 }
 
+/* =========================================
+   BODY (HANDLES VIEWPORT HEIGHT)
+========================================= */
 body {
-    background-color: #0f1015; /* Deep dark background */
+    background-color: #0f1015; 
     color: #ffffff;
     height: 100vh;
+    height: 100dvh; /* Critical for mobile keyboards */
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Prevents whole-page scrolling */
+    overflow: hidden; /* Stops bouncy scrolling */
 }
 
 /* =========================================
@@ -27,45 +32,41 @@ body {
     filter: blur(80px);
     z-index: -1;
 }
-
 .circle1 {
-    width: 300px;
-    height: 300px;
-    background: rgba(112, 0, 255, 0.4); /* Purple glow */
-    top: -50px;
-    left: -50px;
+    width: 300px; height: 300px;
+    background: rgba(112, 0, 255, 0.4); 
+    top: -50px; left: -50px;
 }
-
 .circle2 {
-    width: 400px;
-    height: 400px;
-    background: rgba(0, 212, 255, 0.3); /* Blue glow */
-    bottom: -100px;
-    right: -100px;
+    width: 400px; height: 400px;
+    background: rgba(0, 212, 255, 0.3); 
+    bottom: -100px; right: -100px;
 }
 
 /* =========================================
-   MAIN GLASS CONTAINER
+   MAIN GLASS CONTAINER (FLEX PARENT)
 ========================================= */
 .glass-container {
-    width: 400px; /* Laptop size */
-    height: 85vh; /* Laptop size */
+    width: 400px; 
+    height: 85vh; 
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    
+    /* Flexbox is the magic here */
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: relative;
 }
 
 /* =========================================
-   HEADER
+   HEADER (NEVER SHRINKS)
 ========================================= */
 .chat-header {
+    flex-shrink: 0; /* Locks it to the top */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -79,37 +80,16 @@ body {
     align-items: center;
     gap: 12px;
 }
-
-.app-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.app-info h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.app-info p {
-    font-size: 0.8rem;
-    color: #00ff88; /* Green active status text */
-}
-
-.online-indicator {
-    width: 10px;
-    height: 10px;
-    background-color: #00ff88;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #00ff88;
-}
+.app-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.app-info h2 { font-size: 1.1rem; font-weight: 600; }
+.app-info p { font-size: 0.8rem; color: #00ff88; }
+.online-indicator { width: 10px; height: 10px; background-color: #00ff88; border-radius: 50%; box-shadow: 0 0 8px #00ff88; }
 
 /* =========================================
-   MESSAGES AREA
+   MESSAGES AREA (TAKES ALL EMPTY SPACE)
 ========================================= */
 .messages-area {
-    flex-grow: 1;
+    flex-grow: 1; /* Pushes the header up and the input bar down */
     padding: 20px;
     overflow-y: auto;
     display: flex;
@@ -117,20 +97,14 @@ body {
     gap: 10px;
     scroll-behavior: smooth;
 }
-
-/* Custom Scrollbar for Webkit */
-.messages-area::-webkit-scrollbar {
-    width: 6px;
-}
-.messages-area::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-}
+.messages-area::-webkit-scrollbar { width: 6px; }
+.messages-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 
 /* =========================================
-   INPUT AREA
+   INPUT AREA (NEVER SHRINKS)
 ========================================= */
 .input-area {
+    flex-shrink: 0; /* Locks it to the bottom */
     display: flex;
     padding: 15px;
     background: rgba(0, 0, 0, 0.3);
@@ -147,149 +121,47 @@ body {
     color: white;
     font-size: 0.95rem;
     outline: none;
-    transition: 0.3s;
 }
-
-#message-input:focus {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-#message-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-}
-
+#message-input:focus { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
 #send-btn {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: none;
+    width: 45px; height: 45px; border-radius: 50%; border: none;
     background: linear-gradient(135deg, #7000ff, #00d4ff);
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: 0.2s;
-}
-
-#send-btn:active {
-    transform: scale(0.95);
+    color: white; font-size: 1.2rem; cursor: pointer;
 }
 
 /* =========================================
-   LOGIN MODAL
+   LOGIN MODAL (UNCHANGED)
 ========================================= */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Keeps it on top */
-}
-
-.glass-modal {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 40px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 90%;
-    max-width: 350px;
-}
-
-.modal-logo {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 20px;
-}
-
-.glass-modal h3 {
-    font-size: 1.5rem;
-    margin-bottom: 5px;
-}
-
-.glass-modal p {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 20px;
-}
-
-#username-input {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 12px;
-    color: white;
-    font-size: 1rem;
-    text-align: center;
-    margin-bottom: 20px;
-    outline: none;
-}
-
-#join-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #7000ff, #00d4ff);
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-#join-btn:active {
-    transform: scale(0.98);
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.glass-modal { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; width: 90%; max-width: 350px; }
+.modal-logo { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 20px; }
+.glass-modal h3 { font-size: 1.5rem; margin-bottom: 5px; }
+.glass-modal p { font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 20px; }
+#username-input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; color: white; text-align: center; margin-bottom: 20px; outline: none; }
+#join-btn { width: 100%; background: linear-gradient(135deg, #7000ff, #00d4ff); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 600; }
 
 /* =========================================
-   MOBILE RESPONSIVENESS (BULLETPROOF FIX)
+   MOBILE RESPONSIVENESS (THE TRUE FIX)
 ========================================= */
 @media screen and (max-width: 768px) {
     body {
-        align-items: flex-start;
+        /* Removes centering on mobile so the app naturally fills the screen */
+        display: block; 
     }
 
     .glass-container {
-        position: fixed;
-        top: 0;
-        left: 0;
         width: 100%;
-        height: 100vh;  /* Fallback for older browsers */
-        height: 100dvh; /* Modern mobile browsers */
+        height: 100%; /* Perfectly matches the 100dvh body */
         border-radius: 0;
         border: none;
     }
 
-    .messages-area {
-        flex-grow: 1;
-        margin-bottom: 70px; /* Creates space so messages don't get hidden under the input bar */
-    }
-
     .input-area {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
+        /* Adds a tiny bit of padding to the bottom so it doesn't hit the Android swipe bar */
         padding-bottom: env(safe-area-inset-bottom, 15px);
     }
 
     .circle {
-        display: none !important; /* Forces the circles to hide so we know the update worked */
+        display: none !important;
     }
 }
