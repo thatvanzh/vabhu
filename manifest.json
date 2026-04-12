@@ -1,0 +1,21 @@
+{
+  "name": "Vabhu Live Chat",
+  "short_name": "Vabhu",
+  "description": "Real-time live chatting app",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "chatlogo2.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "chatlogo2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
