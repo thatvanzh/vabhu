@@ -9,91 +9,99 @@ const messagesContainer = document.getElementById("messages-container");
 
 let uname;
 
-// JOIN CHAT
-joinBtn.addEventListener("click", function(){
-    let username = usernameInput.value;
-    if(username.length == 0) return;
+/* ================= JOIN ================= */
+joinBtn.addEventListener("click", () => {
+    const username = usernameInput.value.trim();
+    if (!username) return;
 
     uname = username;
-
-    // ✅ MATCH SERVER EVENT NAME
     socket.emit("new-user-joined", username);
 
     modal.style.display = "none";
 });
 
-// SEND MESSAGE
-function sendMessage(){
-    let message = messageInput.value;
-    if(message.length == 0) return;
+/* ================= SEND ================= */
+function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message) return;
 
     renderMessage("my", {
-        text: message
+        username: "You",
+        text: message,
+        time: getTime()
     });
 
-    // ✅ MATCH SERVER EVENT NAME
     socket.emit("send", message);
 
     messageInput.value = "";
 }
 
+/* SEND EVENTS */
 sendBtn.addEventListener("click", sendMessage);
 
-messageInput.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-        sendMessage();
-    }
+messageInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage();
 });
 
-// RECEIVE MESSAGE
-socket.on("receive", function(data){
+/* ================= RECEIVE ================= */
+socket.on("receive", (data) => {
     renderMessage("other", {
         username: data.name,
-        text: data.message
+        text: data.message,
+        time: getTime()
     });
 });
 
-// USER JOINED
-socket.on("user-joined", function(name){
-    renderMessage("update", name + " joined the chat");
+/* ================= JOIN / LEAVE ================= */
+socket.on("user-joined", (name) => {
+    renderMessage("update", `${name} joined the chat`);
 });
 
-// USER LEFT
-socket.on("left", function(name){
-    renderMessage("update", name + " left the chat");
+socket.on("left", (name) => {
+    renderMessage("update", `${name} left the chat`);
 });
 
-// RENDER MESSAGE
-function renderMessage(type, message){
-    let el = document.createElement("div");
+/* ================= RENDER ================= */
+function renderMessage(type, message) {
+    const el = document.createElement("div");
 
-    if(type == "my"){
-        // ✅ Changed class to "message sent" to match our CSS
-        el.className = "message sent"; 
+    if (type === "my") {
+        el.className = "message sent";
         el.innerHTML = `
-            <span>You</span>
-            <div class="text">${message.text}</div>
+            <span>${message.username}</span>
+            <div>${message.text}</div>
+            <small>${message.time}</small>
         `;
-    }
-    else if(type == "other"){
-        // ✅ Changed class to "message received" to match our CSS
+    } 
+    else if (type === "other") {
         el.className = "message received";
         el.innerHTML = `
             <span>${message.username}</span>
-            <div class="text">${message.text}</div>
+            <div>${message.text}</div>
+            <small>${message.time}</small>
         `;
-    }
-    else if(type == "update"){
+    } 
+    else {
         el.className = "update-message";
         el.innerText = message;
     }
 
     messagesContainer.appendChild(el);
-    
-    // Auto-scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-    messagesContainer.appendChild(el);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    /* ✅ SMOOTH AUTO SCROLL */
+    messagesContainer.scrollTo({
+        top: messagesContainer.scrollHeight,
+        behavior: "smooth"
+    });
 }
 
+/* ================= TIME ================= */
+function getTime() {
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes();
+
+    if (m < 10) m = "0" + m;
+
+    return `${h}:${m}`;
+}
