@@ -260,21 +260,33 @@ body {
 /* =========================================
    MOBILE RESPONSIVENESS (THE PWA FIX)
 ========================================= */
+
 @media screen and (max-width: 768px) {
+    body {
+        align-items: flex-start; /* Stops the whole app from floating in the middle */
+    }
+
     .glass-container {
+        position: fixed; /* Completely locks the app to the edges of your phone */
+        top: 0;
+        left: 0;
         width: 100%;
-        height: 100dvh; /* Dynamic height to handle mobile keyboards perfectly */
-        border-radius: 0; /* Remove corners for native app feel */
+        height: 100dvh;
+        border-radius: 0;
         border: none;
         box-shadow: none;
     }
 
-    .circle {
-        display: none; /* Hide background glows on mobile to save battery and performance */
+    .messages-area {
+        flex: 1; /* Forces the message area to stretch and fill all empty space */
     }
 
-    /* Pushes input up slightly if iOS/Android bottom swipe bar gets in the way */
     .input-area {
-        padding-bottom: env(safe-area-inset-bottom, 15px);
+        margin-top: auto; /* Absolutely forces the text bar to the bottom */
+        padding-bottom: env(safe-area-inset-bottom, 15px); /* Keeps it above the Android swipe bar */
+    }
+
+    .circle {
+        display: none; 
     }
 }
