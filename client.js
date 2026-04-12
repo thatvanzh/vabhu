@@ -63,18 +63,23 @@ socket.on("left", function(name){
     renderMessage("update", name + " left the chat");
 });
 
-// RENDER
+// RENDER MESSAGE
 function renderMessage(type, message){
     let el = document.createElement("div");
 
     if(type == "my"){
-        el.className = "message my-message";
-        el.innerHTML = `<div class="text">${message.text}</div>`;
+        // ✅ Changed class to "message sent" to match our CSS
+        el.className = "message sent"; 
+        el.innerHTML = `
+            <span>You</span>
+            <div class="text">${message.text}</div>
+        `;
     }
     else if(type == "other"){
-        el.className = "message other-message";
+        // ✅ Changed class to "message received" to match our CSS
+        el.className = "message received";
         el.innerHTML = `
-            <span class="username">${message.username}</span>
+            <span>${message.username}</span>
             <div class="text">${message.text}</div>
         `;
     }
@@ -83,6 +88,11 @@ function renderMessage(type, message){
         el.innerText = message;
     }
 
+    messagesContainer.appendChild(el);
+    
+    // Auto-scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
     messagesContainer.appendChild(el);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
