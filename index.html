@@ -6,6 +6,10 @@
     <title>Vabhu Chat</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a1a"> 
+    <link rel="apple-touch-icon" href="chatlogo2.png">
 </head>
 <body>
 
@@ -13,7 +17,6 @@
     <div class="circle circle2"></div>
 
     <div class="glass-container">
-        
         <div class="chat-header">
             <div class="logo-area">
                 <img src="chatlogo2.png" alt="Vabhu" class="app-logo">
@@ -26,7 +29,7 @@
         </div>
 
         <div class="messages-area" id="messages-container">
-            </div>
+        </div>
 
         <div class="input-area">
             <input type="text" id="message-input" placeholder="Type something sweet...">
@@ -46,5 +49,15 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((reg) => console.log('Service Worker registered!'))
+                    .catch((err) => console.log('Service Worker registration failed: ', err));
+            });
+        }
+    </script>
 </body>
 </html>
