@@ -11,6 +11,8 @@ let uname;
 
 /* ================= JOIN ================= */
 joinBtn.addEventListener("click", () => {
+    console.log("JOIN CLICKED"); // 👈 ADD THIS
+
     const username = usernameInput.value.trim();
     if (!username) return;
 
