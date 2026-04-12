@@ -141,27 +141,35 @@ body {
 #join-btn { width: 100%; background: linear-gradient(135deg, #7000ff, #00d4ff); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 600; }
 
 /* =========================================
-   MOBILE RESPONSIVENESS (THE TRUE FIX)
+   MOBILE SCREEN FIX
 ========================================= */
 @media screen and (max-width: 768px) {
     body {
-        /* Removes centering on mobile so the app naturally fills the screen */
-        display: block; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Stops screen from bouncing */
     }
 
     .glass-container {
-        width: 100%;
-        height: 100%; /* Perfectly matches the 100dvh body */
+        width: 100vw;   /* 100% of screen width */
+        height: 100dvh; /* 100% of screen height (adjusts for keyboard) */
+        max-width: none;
         border-radius: 0;
         border: none;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .messages-area {
+        flex-grow: 1; /* Pushes the chat box open */
+        overflow-y: auto;
     }
 
     .input-area {
-        /* Adds a tiny bit of padding to the bottom so it doesn't hit the Android swipe bar */
+        flex-shrink: 0; /* Locks the text bar to the bottom */
         padding-bottom: env(safe-area-inset-bottom, 15px);
-    }
-
-    .circle {
-        display: none !important;
     }
 }
