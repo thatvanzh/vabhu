@@ -5,110 +5,204 @@
     font-family: 'Inter', sans-serif;
 }
 
-/* BODY FIX */
+/* BODY */
 body {
-    background: #fce4ec;
-    min-height: 100vh;
-    min-height: 100dvh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    background: #111b21;
+    height: 100vh;
+    height: 100dvh;
 }
 
-/* MAIN CONTAINER */
-.glass-container {
+/* MAIN APP */
+.chat-app {
     display: flex;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    width: 100%;
-    max-width: 420px; /* Better than fixed 400px */
-    height: 85vh;
-
-    border-radius: 20px;
-    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 420px;
+    margin: auto;
+    background: #0b141a;
 }
 
-/* MESSAGES */
+/* HEADER */
+.chat-header {
+    background: #202c33;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #2a3942;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.app-info h2 {
+    font-size: 16px;
+    color: #e9edef;
+}
+
+.app-info p {
+    font-size: 12px;
+    color: #8696a0;
+}
+
+/* MESSAGES AREA */
 .messages-area {
     flex: 1;
     padding: 12px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+
+    background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
 }
 
-/* MESSAGE BUBBLES */
+/* MESSAGE */
 .message {
     max-width: 75%;
-    padding: 10px 14px;
-    border-radius: 18px;
+    padding: 8px 12px;
+    border-radius: 10px;
     font-size: 14px;
-    word-wrap: break-word;
+    line-height: 1.4;
 }
 
+/* SENT */
 .sent {
     align-self: flex-end;
-    background-color: #ff80ab;
-    color: white;
-    border-bottom-right-radius: 4px;
+    background: #005c4b;
+    color: #e9edef;
+    border-top-right-radius: 0;
 }
 
+/* RECEIVED */
 .received {
     align-self: flex-start;
-    background-color: white;
-    color: #333;
-    border-bottom-left-radius: 4px;
+    background: #202c33;
+    color: #e9edef;
+    border-top-left-radius: 0;
+}
+
+/* USERNAME */
+.message span {
+    font-size: 11px;
+    opacity: 0.7;
+    display: block;
+    margin-bottom: 2px;
 }
 
 /* INPUT AREA */
 .input-area {
-    padding: 10px;
-    background: white;
     display: flex;
+    align-items: center;
+    padding: 8px;
+    background: #202c33;
     gap: 8px;
-    position: sticky;
-    bottom: 0;
 }
 
-/* INPUT FIELD */
+/* INPUT */
 #message-input {
     flex: 1;
     padding: 10px 12px;
     border-radius: 20px;
-    border: 1px solid #ddd;
+    border: none;
     outline: none;
+    background: #2a3942;
+    color: white;
     font-size: 14px;
 }
 
-/* MOBILE FIX */
+/* SEND BUTTON */
+#send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #00a884;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* UPDATE MESSAGE */
+.update-message {
+    text-align: center;
+    font-size: 12px;
+    color: #8696a0;
+    margin: 5px 0;
+}
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.glass-modal {
+    background: #202c33;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    width: 90%;
+    max-width: 300px;
+}
+
+.modal-logo {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+.glass-modal h3 {
+    color: #e9edef;
+}
+
+.glass-modal p {
+    color: #8696a0;
+    font-size: 13px;
+}
+
+.glass-modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+.glass-modal button {
+    padding: 10px;
+    width: 100%;
+    border: none;
+    background: #00a884;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* MOBILE FULLSCREEN */
 @media (max-width: 768px) {
-    body {
-        align-items: stretch; /* important */
-    }
-
-    .glass-container {
-        width: 100%;
-        height: 100dvh;
-        max-width: none;
-        border-radius: 0;
-    }
-
-    .messages-area {
-        padding: 10px;
-    }
-
-    .message {
-        max-width: 85%;
-        font-size: 13px;
+    .chat-app {
+        max-width: 100%;
     }
 
     #message-input {
-        font-size: 16px; /* prevents zoom on iOS */
+        font-size: 16px;
     }
 }
