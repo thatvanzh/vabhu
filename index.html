@@ -2,62 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vabhu Chat</title>
-   <link rel="stylesheet" href="style.css?v=final_fix">
+
+    <link rel="stylesheet" href="style.css?v=wa_upgrade">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a1a1a"> 
+    <meta name="theme-color" content="#111b21">
     <link rel="apple-touch-icon" href="chatlogo2.png">
 </head>
+
 <body>
 
-    <div class="circle circle1"></div>
-    <div class="circle circle2"></div>
+    <!-- MAIN CHAT -->
+    <div class="chat-app">
 
-    <div class="glass-container">
+        <!-- HEADER (WhatsApp Style) -->
         <div class="chat-header">
-            <div class="logo-area">
-                <img src="chatlogo2.png" alt="Vabhu" class="app-logo">
+            <div class="header-left">
+                <img src="chatlogo2.png" class="app-logo">
                 <div class="app-info">
                     <h2>Vabhu</h2>
-                    <p>Live Chat</p>
+                    <p id="status-text">Online</p>
                 </div>
             </div>
-            <div class="online-indicator"></div>
         </div>
 
-        <div class="messages-area" id="messages-container">
-        </div>
+        <!-- CHAT BODY -->
+        <div class="messages-area" id="messages-container"></div>
 
+        <!-- INPUT BAR -->
         <div class="input-area">
-            <input type="text" id="message-input" placeholder="Type something sweet...">
+            <input type="text" id="message-input" placeholder="Type a message">
             <button id="send-btn">➤</button>
         </div>
+
     </div>
 
+    <!-- JOIN MODAL -->
     <div class="modal-overlay" id="join-modal">
         <div class="glass-modal">
-            <img src="chatlogo2.png" alt="Logo" class="modal-logo">
-            <h3>Enter Vabhu</h3>
-            <p>Please enter your name</p>
+            <img src="chatlogo2.png" class="modal-logo">
+            <h3>Welcome</h3>
+            <p>Enter your name</p>
             <input type="text" id="username-input" placeholder="Your Name">
-            <button id="join-btn">Start Chatting</button>
+            <button id="join-btn">Continue</button>
         </div>
     </div>
 
+    <!-- SOCKET -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((reg) => console.log('Service Worker registered!'))
-                    .catch((err) => console.log('Service Worker registration failed: ', err));
-            });
-        }
-    </script>
 </body>
 </html>
